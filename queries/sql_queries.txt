@@ -1,0 +1,229 @@
+1. Retrieve all customer names who have a balance greater than 50,000.
+
+mysql> select customer_name from account where current_balance>50000;
++---------------+
+| customer_name |
++---------------+
+| Raj Malhotra  |
+| Sneha Iyer    |
+| Aditya Kapoor |
+| Manisha Rao   |
+| Deepak Jain   |
+| Aisha Khan    |
+| Rahul Nair    |
++---------------+
+
+2. Display account number, customer name, and account type of all customers having SAVINGS accounts.
+
+mysql> select account_number,customer_name,account_type from account where account_type like 'saving';
++----------------+---------------+--------------+
+| account_number | customer_name | account_type |
++----------------+---------------+--------------+
+|            101 | Amit Sharma   | saving       |
+|            103 | Rohit Mehta   | saving       |
+|            104 | Priya Singh   | saving       |
+|            106 | Kiran Rao     | saving       |
+|            108 | Rina Das      | saving       |
+|            110 | Meena Joshi   | saving       |
+|            111 | Raj Malhotra  | saving       |
+|            113 | Aditya Kapoor | saving       |
+|            115 | Deepak Jain   | saving       |
+|            117 | Rahul Nair    | saving       |
++----------------+---------------+--------------+
+
+3. List all transactions made in the current month.
+
+mysql> select transaction_type,transaction_date,month(transaction_date) as current_month from transaction where month(transaction_date)=month(curdate());
++------------------+---------------------+---------------+
+| transaction_type | transaction_date    | current_month |
++------------------+---------------------+---------------+
+| transaction      | 2025-11-03 10:15:00 |            11 |
+| transaction      | 2025-11-03 10:15:00 |            11 |
+| transaction      | 2025-11-03 10:15:00 |            11 |
+| transaction      | 2025-11-03 10:15:00 |            11 |
+| withdraw         | 2025-11-03 10:15:00 |            11 |
+| withdraw         | 2025-11-03 10:15:00 |            11 |
++------------------+---------------------+---------------+
+
+4. Show customers who have not made any transactions yet.
+
+mysql> select a.account_number,a.customer_name from account a left join transaction t on a.account_number=t.account_number where t.account_number is null;
++----------------+---------------+
+| account_number | customer_name |
++----------------+---------------+
+|            117 | Rahul Nair    |
++----------------+---------------+
+
+5. Display the top 3 customers with the highest account balance.
+
+mysql> select customer_name,current_balance from account order by current_balance desc limit 3;
+
++---------------+-----------------+
+| customer_name | current_balance |
++---------------+-----------------+
+| Aisha Khan    |           90000 |
+| Manisha Rao   |           75000 |
+| Deepak Jain   |           67000 |
++---------------+-----------------+
+
+
+6. Retrieve all transactions where the amount is greater than 10,000.
+
+mysql> select transaction_type,amount from transaction where amount >10000;
+
++------------------+--------+
+| transaction_type | amount |
++------------------+--------+
+| transaction      |  15000 |
+| withdraw         |  12000 |
+| transaction      |  18000 |
+| withdraw         |  20000 |
+| transaction      |  25000 |
+| withdraw         |  30000 |
++------------------+--------+
+
+
+
+7. Show the total balance of all accounts combined.
+
+mysql> select count(*),sum(current_balance) from account;
+
++----------+----------------------+
+| count(*) | sum(current_balance) |
++----------+----------------------+
+|       17 |               734000 |
++----------+----------------------+
+
+
+8. List customers along with their total deposited amount.
+
+mysql> select a.customer_name,t.amount as total_deposited  from account a  join transaction t on a.account_number=t.account_number where transaction_type='transaction';
+
++---------------+-----------------+
+| customer_name | total_deposited |
++---------------+-----------------+
+| Amit Sharma   |            4000 |
+| Priya Singh   |            2500 |
+| Rina Das      |            3500 |
+| Neha Patel    |            8000 |
+| Suresh Gupta  |            9000 |
+| Raj Malhotra  |           15000 |
+| Aditya Kapoor |           18000 |
+| Deepak Jain   |           25000 |
++---------------+-----------------+
+
+
+9. Find customers who made a withdrawal of more than 5,000.
+
+mysql> select a.customer_name,t.amount as withdrawl from account a  inner join transaction t on a.account_number=t.account_number where t.transaction_type='withdraw' and t.amount>5000;
+
++---------------+-----------+
+| customer_name | withdrawl |
++---------------+-----------+
+| Ankit Verma   |      6000 |
+| Sneha Iyer    |     12000 |
+| Manisha Rao   |     20000 |
+| Aisha Khan    |     30000 |
++---------------+-----------+
+
+10. Display the most recent transaction date for each account.
+
+mysql> select a.account_number,a.customer_name,max(t.transaction_date) as recent_transaction_date from account a inner join  transaction t on a.account_number=t.account_number group by a.account_number,a.customer_name;
+
++----------------+---------------+-------------------------+
+| account_number | customer_name | recent_transaction_date |
++----------------+---------------+-------------------------+
+|            101 | Amit Sharma   | 2025-04-03 10:15:00     |
+|            102 | Neha Patel    | 2025-11-03 10:15:00     |
+|            103 | Rohit Mehta   | 2025-02-03 10:15:00     |
+|            104 | Priya Singh   | 2025-11-03 10:15:00     |
+|            105 | Vikram Desai  | 2025-08-03 10:15:00     |
+|            106 | Kiran Rao     | 2025-05-03 10:15:00     |
+|            107 | Suresh Gupta  | 2025-11-03 10:15:00     |
+|            108 | Rina Das      | 2025-07-03 10:15:00     |
+|            109 | Ankit Verma   | 2025-10-03 10:15:00     |
+|            110 | Meena Joshi   | 2025-09-03 10:15:00     |
+|            111 | Raj Malhotra  | 2025-11-03 10:15:00     |
+|            112 | Sneha Iyer    | 2025-07-03 10:15:00     |
+|            113 | Aditya Kapoor | 2025-06-03 10:15:00     |
+|            114 | Manisha Rao   | 2025-11-03 10:15:00     |
+|            115 | Deepak Jain   | 2025-01-03 10:15:00     |
+|            116 | Aisha Khan    | 2025-11-03 10:15:00     |
++----------------+---------------+-------------------------+
+
+11. Retrieve the number of transactions each customer has made.
+
+mysql> select a.account_number,a.customer_name,count(t.transaction_id) as total_transactions from account a inner join transaction t on a.account_number=t.account_number group by a.account_number;
+
++----------------+---------------+--------------------+
+| account_number | customer_name | total_transactions |
++----------------+---------------+--------------------+
+|            101 | Amit Sharma   |                  1 |
+|            102 | Neha Patel    |                  1 |
+|            103 | Rohit Mehta   |                  1 |
+|            104 | Priya Singh   |                  1 |
+|            105 | Vikram Desai  |                  1 |
+|            106 | Kiran Rao     |                  1 |
+|            107 | Suresh Gupta  |                  1 |
+|            108 | Rina Das      |                  1 |
+|            109 | Ankit Verma   |                  1 |
+|            110 | Meena Joshi   |                  1 |
+|            111 | Raj Malhotra  |                  1 |
+|            112 | Sneha Iyer    |                  1 |
+|            113 | Aditya Kapoor |                  1 |
+|            114 | Manisha Rao   |                  1 |
+|            115 | Deepak Jain   |                  1 |
+|            116 | Aisha Khan    |                  1 |
++----------------+---------------+--------------------+
+
+12. List customers who have both SAVINGS and CURRENT accounts (if allowed).
+
+mysql> select customer_name from account where account_type in('saving','current') group by customer_name having count(distinct account_type)=2;
+Empty set (0.02 sec)
+
+13. Find all accounts created by customers whose name starts with 'P'.
+
+mysql> select account_number,customer_name from account where customer_name like 'p%';
+
++----------------+---------------+
+| account_number | customer_name |
++----------------+---------------+
+|            104 | Priya Singh   |
++----------------+---------------+
+
+14. Retrieve customers sorted by their account balance in descending order.
+
+mysql> select customer_name,current_balance as account_balance from account order by current_balance desc;
++---------------+-----------------+
+| customer_name | account_balance |
++---------------+-----------------+
+| Aisha Khan    |           90000 |
+| Manisha Rao   |           75000 |
+| Deepak Jain   |           67000 |
+| Sneha Iyer    |           62000 |
+| Aditya Kapoor |           58000 |
+| Raj Malhotra  |           55000 |
+| Rahul Nair    |           55000 |
+| Vikram Desai  |           40000 |
+| Rina Das      |           35000 |
+| Rohit Mehta   |           32000 |
+| Meena Joshi   |           30000 |
+| Suresh Gupta  |           28000 |
+| Ankit Verma   |           27000 |
+| Amit Sharma   |           25000 |
+| Kiran Rao     |           22000 |
+| Neha Patel    |           18000 |
+| Priya Singh   |           15000 |
++---------------+-----------------+
+
+
+15. Display the average account balance per account type.
+
+mysql> select account_type,avg(current_balance) as average_balance from account group by account_type;
+
++--------------+-----------------+
+| account_type | average_balance |
++--------------+-----------------+
+| saving       |      39400.0000 |
+| current      |      48571.4286 |
++--------------+-----------------+
